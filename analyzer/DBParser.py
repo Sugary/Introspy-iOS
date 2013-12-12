@@ -30,12 +30,17 @@ class DBParser(object):
                 subgroup = unicode(row[2]).encode('ascii','ignore').capitalize()
 
                 # Store the call
+                #Hack to display warnings  TODO: remove this
+                method = unicode(row[4])
+                if 'W' in unicode(row[6]):
+                    method += ' - [WARNING :' +  unicode(row[7]) + "]"
+
                 self.tracedCalls.append(TracedCall(
                     callId = row[0],
                     group = group,
                     subgroup = subgroup,
                     clazz = unicode(row[3]),
-                    method = unicode(row[4]),
+                    method = method,
                     argsAndReturnValue = self._sanitize_args_dict(plistlib.readPlistFromString(row[5].encode('utf-8')))))
 
                 # Store the api group and subgroup
