@@ -87,7 +87,6 @@ class DBParser(object):
                                'subgroups' : subgroupList })
 
         apigroupsDict = {'groups' : groupList}
-        print json.dumps(apigroupsDict, ensure_ascii=True)
         return json.dumps(apigroupsDict, ensure_ascii=True)
 
 

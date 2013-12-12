@@ -29,28 +29,28 @@ def main(argv):
         help="Generate an HTML report and write it to the\
         specified directory (ignores all other command line\
         optons).")
-    cli_group = parser.add_argument_group('command-line reporting options')
-    cli_group.add_argument("-l", "--list",
-        action="store_true",
-        help="List traced calls (no signature analysis\
-        performed)")
-    cli_group.add_argument("-g", "--group",
-        choices=APIGroups.API_GROUPS_LIST,
-        help="Filter by signature group")
-    cli_group.add_argument("-s", "--sub-group",
-        choices=APIGroups.API_SUBGROUPS_LIST,
-        help="Filter by signature sub-group")
-    stats_group = parser.add_argument_group('additional command-line options')
-    stats_group.add_argument("-i", "--info",
-        choices=['urls', 'files'],#, 'keys'],
-	help="Enumerate URLs or files accessed within the traced calls")#' and keychain items, etc.")
-    stats_group.add_argument("-d", "--delete",
-        action="store_true",
-        help="Remove all introspy databases on a given remote device")
+    #cli_group = parser.add_argument_group('command-line reporting options')
+    #cli_group.add_argument("-l", "--list",
+    #    action="store_true",
+    #    help="List traced calls (no signature analysis\
+    #    performed)")
+    #cli_group.add_argument("-g", "--group",
+    #    choices=APIGroups.API_GROUPS_LIST,
+    #    help="Filter by signature group")
+    #cli_group.add_argument("-s", "--sub-group",
+    #    choices=APIGroups.API_SUBGROUPS_LIST,
+    #    help="Filter by signature sub-group")
+    #stats_group = parser.add_argument_group('additional command-line options')
+    #stats_group.add_argument("-i", "--info",
+    #    choices=['urls', 'files'],#, 'keys'],
+	#help="Enumerate URLs or files accessed within the traced calls")#' and keychain items, etc.")
+    #stats_group.add_argument("-d", "--delete",
+    #    action="store_true",
+    #    help="Remove all introspy databases on a given remote device")
     parser.add_argument("db",
-        help="The introspy-generated database to analyze.\
-        specifying an IP address causes the analyzer to fetch a\
-        remote database.")
+        help="The introspy-generated database to analyze.")#\
+        #specifying an IP address causes the analyzer to fetch a\
+        #remote database.")
     args = parser.parse_args()
 
 
@@ -97,7 +97,7 @@ def main(argv):
             # TODO: Call print() here instead of inside the method
             analyzedDB.get_traced_calls_as_text(args.group, args.sub_group)
 
-        else: # Print all findings 
+        else: # Print all findings
             analyzedDB.get_findings_as_text(args.group, args.sub_group)
 
 
