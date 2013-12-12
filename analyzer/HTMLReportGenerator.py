@@ -39,5 +39,5 @@ class HTMLReportGenerator:
 
         # Dump the API groups
         with open(os.path.join(outDir, self.API_GROUPS_FILE_NAME), 'w') as jsFile:
-            jsFile.write('var apiGroups = ' + APIGroups.get_groups_as_JSON() + ';')
- 
+            jsFile.write('var apiGroups = ' + self.analyzedDB.get_API_groups_as_JSON() + ';')
+

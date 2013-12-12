@@ -7,14 +7,14 @@ class TracedCall:
     """One traced function call extracted from an Introspy DB."""
 
 
-    def __init__(self, callId, clazz, method, argsAndReturnValue):
+    def __init__(self, callId, group, subgroup, clazz, method, argsAndReturnValue):
         self.callId = callId
         self.clazz = clazz
         self.method = method
         self.argsAndReturnValue = argsAndReturnValue
         # Get the call's group and subgroup
-        self.subgroup = APIGroups.find_subgroup(clazz, method)
-        self.group =  APIGroups.find_group(self.subgroup)
+        self.subgroup = subgroup
+        self.group =  group
 
 
     def extract_value_for_argument(self, arg_path):

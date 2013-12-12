@@ -16,27 +16,45 @@ class DBParser(object):
         """
         Opens the SQLite database at dbPath and extracts all traced calls from it.
         """
-
+# self, callId, group, subgroup, clazz, method, argsAndReturnValue
         self.dbPath = dbPath
         self.tracedCalls = []
+        self.apiGroups = {}
         SqlConn = None
         try:
             SqlConn = sqlite3.connect(dbPath).cursor()
             SqlConn.execute("SELECT * FROM tracedCalls")
-            rowid = 1
             for row in SqlConn:
+
+                group = unicode(row[1]).encode('ascii','ignore').capitalize()
+                subgroup = unicode(row[2]).encode('ascii','ignore').capitalize()
+
+                # Store the call
                 self.tracedCalls.append(TracedCall(
-                    callId = rowid, 
-                    clazz = unicode(row[0]), 
-                    method = unicode(row[1]), 
-                    argsAndReturnValue = self._sanitize_args_dict(plistlib.readPlistFromString(row[2].encode('utf-8')))))
-                rowid += 1
+                    callId = row[0],
+                    group = group,
+                    subgroup = subgroup,
+                    clazz = unicode(row[3]),
+                    method = unicode(row[4]),
+                    argsAndReturnValue = self._sanitize_args_dict(plistlib.readPlistFromString(row[5].encode('utf-8')))))
+
+                # Store the api group and subgroup
+                if group in self.apiGroups.keys():
+                    self.apiGroups[group].append(subgroup)
+                else:
+                    self.apiGroups[group] = [subgroup]
+
         except sqlite3.Error as e:
             #print "Fatal error: %s" % e
             raise
+
         finally:
             if SqlConn:
                 SqlConn.close()
+
+        # Remoe duplicates from subgroups
+        for groupName in self.apiGroups.keys():
+            self.apiGroups[groupName] = list(set(self.apiGroups[groupName]))
 
 
     def get_traced_calls_as_text(self, group=None, subgroup=None):
@@ -55,6 +73,22 @@ class DBParser(object):
         tracedCalls_dict = {}
         tracedCalls_dict['calls'] =  self.tracedCalls
         return json.dumps(tracedCalls_dict, default=self._json_serialize)
+
+
+    def get_API_groups_as_JSON(self):
+        """Returns the list of API groups and subgroups as JSON."""
+        groupList = []
+        for groupName in self.apiGroups.keys():
+            subgroupList = []
+            for subgroupName in self.apiGroups[groupName]:
+                subgroupList.append({'name' : subgroupName})
+
+            groupList.append({'name' : groupName,
+                               'subgroups' : subgroupList })
+
+        apigroupsDict = {'groups' : groupList}
+        print json.dumps(apigroupsDict, ensure_ascii=True)
+        return json.dumps(apigroupsDict, ensure_ascii=True)
 
 
     def get_all_URLs(self):
@@ -123,7 +157,7 @@ class DBParser(object):
         elif isinstance(value, datetime.datetime):
             # Keychain items can contain a date. We just store a string representation of it
             return str(value)
-        else: 
+        else:
             # Try to replace this value with a more meaningful string
             if arg in IOS_ENUM_LIST:
                 try:
